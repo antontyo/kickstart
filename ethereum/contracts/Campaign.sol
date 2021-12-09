@@ -28,7 +28,7 @@ contract Campaign {
     uint public minimumContribution;
     //address[] public approvers; //Using array is not effective
     mapping(address => bool) public approvers;
-    uint public approveersCount;
+    uint public approversCount;
 
     modifier restricted(){
         require(msg.sender == manager);
@@ -44,7 +44,7 @@ contract Campaign {
         require(msg.value > minimumContribution);
         //approvers.push(msg.sender); //push() works only in array
         approvers[msg.sender] = true;
-        approveersCount++;
+        approversCount++;
     }
 
     function createRequest(string description, uint value, address recipient) public restricted {
@@ -75,10 +75,24 @@ contract Campaign {
     function finalizeRequest(uint index) public restricted{
         Request storage request = requests[index];
 
-        require(request.approvalCount > (approveersCount / 2));
+        require(request.approvalCount > (approversCount / 2));
         require(!request.complete);
 
         request.recipient.transfer(request.value);
         request.complete = true;
+    }
+
+    function getSummary() public view returns(uint, uint, uint, uint, address){ //use returns here if return the value
+      return (
+        minimumContribution,
+        this.balance,
+        requests.length,
+        approversCount,
+        manager
+      );
+    }
+
+    function getRequestsCount() public view returns(uint){
+      return requests.length;
     }
 }

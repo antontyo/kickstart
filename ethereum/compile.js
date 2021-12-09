@@ -11,7 +11,7 @@ const output = solc.compile(source, 1).contracts;
 
 fs.ensureDirSync(buildPath); //ensure no directory and then create if not available
 
-console.log(output);
+//console.log(output);
 for(let contract in output){
   let fileName = contract.replace(':', ''); //Windows cannot use ':' as a part of filename
   fs.outputJsonSync(
